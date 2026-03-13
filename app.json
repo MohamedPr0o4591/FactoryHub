@@ -1,29 +1,41 @@
 {
   "expo": {
-    "name": "FactoryHub",
+    "name": "Factory Hub",
     "slug": "FactoryHub",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/my-logo.png",
+    "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/my-logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0d1020"
+    },
+    "androidStatusBar": {
+      "hidden": true,
+      "backgroundColor": "#0d1020"
+    },
+    "androidNavigationBar": {
+      "visible": "immersive",
+      "backgroundColor": "#0d1020"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0d1020"
+      },
+      "package": "com.mohamedpr0o459.FactoryHub"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/my-logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d11505cf-3892-43a4-b3b3-ffd8fff22af0"
+      }
     }
   }
 }

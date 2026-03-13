@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "auths",
+  "info": {
+    "singularName": "auth",
+    "pluralName": "auths",
+    "displayName": "auth"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "f_name": {
+      "type": "string",
+      "required": true
+    },
+    "e_mail": {
+      "type": "string",
+      "required": true
+    },
+    "u_pass": {
+      "type": "string",
+      "required": true
+    },
+    "role": {
+      "type": "string",
+      "default": "user"
+    },
+    "u_img": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "u_status": {
+      "type": "string",
+      "default": "pending",
+      "required": true
+    },
+    "u_phone": {
+      "type": "string"
+    }
+  }
+}

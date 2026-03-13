@@ -3,7 +3,8 @@ import axios from "axios";
 
 const YOUR_PC_IP = "192.168.1.7";
 
-export const BASE_URL = `http://${YOUR_PC_IP}:1337`;
+// export const BASE_URL = `http://${YOUR_PC_IP}:1337`;
+export const BASE_URL = `https://reliable-animal-2d80273808.strapiapp.com`;
 
 export const getAuths = async () => {
   try {

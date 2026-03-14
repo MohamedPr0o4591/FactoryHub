@@ -27,11 +27,12 @@ export default function ChangePasswordPage({ data, onLogout }) {
     }
 
     try {
-      const userId = data?.userData?.documentId;
+      const userId = data?.userData?.id;
       const formData = new FormData();
-      formData.append(`data[u_pass]`, newPassword);
+      formData.append(`u_pass`, newPassword);
+      formData.append(`id`, userId);
 
-      await axios.put(`${BASE_URL}/api/auths/${userId}`, formData, {
+      await axios.post(`${BASE_URL}/factoryhub/auth/update.php`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

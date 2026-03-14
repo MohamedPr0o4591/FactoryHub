@@ -33,7 +33,6 @@ export default function EditScreen({
   const [year, setYear] = useState("");
   const [details, setDetails] = useState("");
   const [sampleImage, setSampleImage] = useState(null);
-  const [isNewImage, setIsNewImage] = useState(false); // ✅ علشان نعرف لو الصورة جديدة
   const [loading, setLoading] = useState(false); // ✅ حالة التحميل
 
   useEffect(() => {
@@ -44,9 +43,8 @@ export default function EditScreen({
       setYear(client.c_year || "");
       setDetails(client.c_additional_options || "");
       setSampleImage(
-        client.c_img?.url ? `${BASE_URL}${client.c_img.url}` : null
+        client.c_img ? `${BASE_URL}/factoryhub/upload/${client.c_img}` : null
       );
-      setIsNewImage(false); // ✅ الصورة الأصلية مش جديدة
     }
   }, [client]);
 
@@ -58,7 +56,6 @@ export default function EditScreen({
         text: "🗑️ حذف الصورة",
         onPress: () => {
           setSampleImage(null);
-          setIsNewImage(true); // ✅ تغيير حصل
         },
         style: "destructive",
       },
@@ -79,7 +76,6 @@ export default function EditScreen({
     });
     if (!r.canceled) {
       setSampleImage(r.assets[0].uri);
-      setIsNewImage(true); // ✅ صورة جديدة
     }
   };
 
@@ -95,7 +91,6 @@ export default function EditScreen({
     });
     if (!r.canceled) {
       setSampleImage(r.assets[0].uri);
-      setIsNewImage(true); // ✅ صورة جديدة
     }
   };
 
@@ -117,36 +112,36 @@ export default function EditScreen({
           try {
             setLoading(true);
 
-            // ✅ استخدم documentId
-            const clientDocId = client.documentId;
+            const clientDocId = client.id;
 
-            if (isNewImage) {
-              const oldImageId = client?.c_img?.id;
-              if (oldImageId) {
-                try {
-                  await deleteImageFromStrapi(oldImageId);
-                } catch (err) {
-                  if (err.response?.status !== 404) throw err;
-                }
-              }
+            let imageFile = null;
+            if (sampleImage) {
+              const fileName = sampleImage.split("/").pop();
+              const fileExtension = fileName.split(".").pop().toLowerCase();
 
-              let newImageId = null;
-              if (sampleImage) {
-                const uploadedFile = await uploadImageToStrapi(sampleImage);
-                newImageId = uploadedFile.id;
-              }
+              const mimeTypes = {
+                jpg: "image/jpeg",
+                jpeg: "image/jpeg",
+                png: "image/png",
+                gif: "image/gif",
+                webp: "image/webp",
+              };
 
-              // ✅ clientDocId بدل client.id
-              await updateClientImage(clientDocId, newImageId);
+              imageFile = {
+                uri: sampleImage,
+                name: fileName,
+                type: mimeTypes[fileExtension] || "image/jpeg",
+              };
             }
 
-            // ✅ clientDocId بدل client.id
             await updateClient(clientDocId, {
               c_name: name.trim(),
               c_phone: phone.trim(),
               c_size: size.trim(),
               c_year: year.trim(),
               c_additional_options: details.trim(),
+              c_img: imageFile,
+              id: clientDocId,
             });
 
             if (data?.refetchClients) {
@@ -177,15 +172,7 @@ export default function EditScreen({
             setLoading(true);
 
             // ✅ استخدم documentId
-            const clientDocId = client.documentId;
-
-            if (client?.c_img?.id) {
-              try {
-                await deleteImageFromStrapi(client.c_img.id);
-              } catch (err) {
-                if (err.response?.status !== 404) throw err;
-              }
-            }
+            const clientDocId = client.id;
 
             // ✅ clientDocId بدل client.id
             await deleteClient(clientDocId);

@@ -1,6 +1,6 @@
 // App.js
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, StatusBar } from "react-native";
+import { View, StyleSheet, StatusBar, I18nManager } from "react-native";
 import * as SplashScreenExpo from "expo-splash-screen";
 import * as NavigationBar from "expo-navigation-bar";
 import SplashScreen from "./pages/SplashScreen";
@@ -20,6 +20,9 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+I18nManager.allowRTL(false);
+I18nManager.forceRTL(false);
 
 const queryClient = new QueryClient();
 
@@ -51,6 +54,17 @@ function MainApp() {
     queryKey: ["clients"],
     queryFn: getClients,
   });
+
+  // ✅ لما الـ authData تتحدث، حدّث الـ userData كمان
+  useEffect(() => {
+    if (authData && userData) {
+      const updatedUser = authData.find((u) => u.id === userData.id);
+      if (updatedUser) {
+        setUserData(updatedUser);
+        AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
+      }
+    }
+  }, [authData]);
 
   // ✅ استخدم clientsData مباشرة من React Query
   const clients = clientsData || [];

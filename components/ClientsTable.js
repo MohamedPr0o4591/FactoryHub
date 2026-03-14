@@ -24,7 +24,7 @@ export default function ClientsTable({
 
   const filtered = clients.filter((client) => {
     if (!searchText) return true;
-    if (searchBy === "name") return client.name.includes(searchText);
+    if (searchBy === "name") return client.c_name.includes(searchText);
     return String(client.id).includes(searchText);
   });
 
@@ -80,7 +80,9 @@ export default function ClientsTable({
               <View style={styles.colSample}>
                 {client.c_img ? (
                   <Image
-                    source={{ uri: `${BASE_URL}${client.c_img.url}` }}
+                    source={{
+                      uri: `${BASE_URL}/factoryhub/upload/${client.c_img}`,
+                    }}
                     style={styles.sampleImg}
                     resizeMode="cover"
                   />

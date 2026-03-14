@@ -79,27 +79,13 @@ export default function ClientDetails({
           try {
             setDeleting(true);
 
-            // 1. حذف صورة العميل (لو موجودة)
-            if (client?.c_img?.id) {
-              try {
-                await deleteImageFromStrapi(client.c_img.id);
-                console.log("🗑️ تم حذف صورة العميل");
-              } catch (err) {
-                if (err.response?.status !== 404) throw err;
-                console.log("ℹ️ الصورة مش موجودة");
-              }
-            }
-
-            // 2. حذف العميل (استخدم documentId)
-            await deleteClient(client.documentId);
+            await deleteClient(client.id);
             console.log("✅ تم حذف العميل");
 
-            // 3. Refetch
             if (data?.refetchClients) {
               await data.refetchClients();
             }
 
-            // 4. إغلاق الـ Modal و تنفيذ onDelete
             onClose();
             Alert.alert("✅ تم", "تم حذف العميل بنجاح!");
             onDelete && onDelete();
@@ -134,7 +120,9 @@ export default function ClientDetails({
                 {client.c_img ? (
                   <Pressable onPress={() => setImageViewerVisible(true)}>
                     <Image
-                      source={{ uri: `${BASE_URL}${client.c_img.url}` }}
+                      source={{
+                        uri: `${BASE_URL}/factoryhub/upload/${client.c_img}`,
+                      }}
                       style={styles.sampleImage}
                       resizeMode="cover"
                     />
@@ -242,7 +230,7 @@ export default function ClientDetails({
 
         {client?.c_img ? (
           <ImageViewer
-            imageUri={`${BASE_URL}${client.c_img.url}`}
+            imageUri={`${BASE_URL}/factoryhub/upload/${client.c_img}`}
             visible={imageViewerVisible}
             onClose={() => setImageViewerVisible(false)}
           />
@@ -348,6 +336,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 10,
     marginBottom: 24,
+    flexWrap: "wrap-reverse",
   },
   clientName: {
     color: "#fff",

@@ -24,13 +24,11 @@ export default function RequestsPage({ data, refetchAuths }) {
   const updateStatus = async (item, newStatus) => {
     try {
       // 1. نحدث في السيرفر
-      await updateUserStatus(item.documentId, newStatus);
+      await updateUserStatus(item.id, newStatus);
 
       // 2. نحدث محلياً في الـ State (عشان الـ UI يتغير فوراً)
       setRequests((prev) =>
-        prev.map((r) =>
-          r.documentId === item.documentId ? { ...r, u_status: newStatus } : r
-        )
+        prev.map((r) => (r.id === item.id ? { ...r, u_status: newStatus } : r))
       );
 
       // 3. نحدث الـ Global Data (اختياري لكن مفيد)

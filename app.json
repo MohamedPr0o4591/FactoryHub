@@ -24,7 +24,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/my-logo.png",
         "backgroundColor": "#0d1020"
       },
       "package": "com.mohamedpr0o459.FactoryHub"

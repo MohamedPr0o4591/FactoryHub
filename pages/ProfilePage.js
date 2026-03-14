@@ -10,11 +10,8 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import img from "../assets/my-logo.png";
-import {
-  deleteImageFromStrapi,
-  updateUserImage,
-  uploadImageToStrapi,
-} from "../services/api";
+import { BASE_URL } from "../services/api";
+import axios from "axios";
 
 export default function ProfilePage({
   data,
@@ -23,41 +20,70 @@ export default function ProfilePage({
   onLogout,
   refetchAuths,
 }) {
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(
+    data?.userData?.u_img
+      ? `${BASE_URL}/factoryhub/upload/${data.userData.u_img}`
+      : null
+  );
 
   const handleUploadImage = async (uri) => {
     try {
-      const oldImageId = data?.userData?.u_img?.id;
-      const userId = data?.userData?.documentId; // ✅ ID المستخدم الرقمي
+      // ✅ خزن الصورة فوراً عشان تتعرض
+      setProfileImage(uri);
 
-      // 1. نحذف القديمة (لو موجودة)
-      if (oldImageId) {
-        try {
-          await deleteImageFromStrapi(oldImageId);
-        } catch (err) {
-          if (err.response?.status !== 404) throw err;
-          console.log("ℹ️ الصورة القديمة مش موجودة");
-        }
-      }
+      const formData = new FormData();
 
-      // 2. نرفع الجديدة
-      const uploadedFile = await uploadImageToStrapi(uri);
+      const fileName = uri.split("/").pop();
+      const fileExtension = fileName.split(".").pop().toLowerCase();
 
-      // 3. ✅ نربط الصورة بالمستخدم (Form Data)
-      await updateUserImage(userId, uploadedFile.id);
+      const mimeTypes = {
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        png: "image/png",
+        gif: "image/gif",
+        webp: "image/webp",
+      };
 
-      // 4. ✅ نحدث الـ State محلياً (عشان الصورة تتغير فوراً بدون ما تخرج وتيجي)
-      data.setUserData({
-        ...data?.userData,
-        u_img: uploadedFile, // نحط الـ object الجديد
+      const mimeType = mimeTypes[fileExtension] || "image/jpeg";
+
+      formData.append("id", data?.userData?.id);
+      formData.append("u_img", {
+        uri,
+        name: fileName,
+        type: mimeType,
       });
 
-      // 5. نعمل Refetch عشان الـ Cache يتحدث
-      await refetchAuths();
+      const response = await axios.post(
+        `${BASE_URL}/factoryhub/auth/update.php`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
-      setProfileImage(uri);
+      console.log("✅ الصورة اتخزنت:", response.data.u_img);
+
+      // ✅ تحديث الـ State بالصورة الجديدة
+      const updatedUserData = {
+        ...data?.userData,
+        u_img: response.data.u_img,
+      };
+
+      data.setUserData(updatedUserData);
+
+      // ✅ IMPORTANT: انتظر قليل ثم اعمل refetch
+      setTimeout(() => {
+        if (refetchAuths) {
+          console.log("🔄 جاري تحديث البيانات...");
+          refetchAuths();
+        }
+      }, 500); // نصف ثانية تأخير
+
+      Alert.alert("✅ تم", "تم تحديث الصورة بنجاح!");
     } catch (error) {
       console.error("❌ Error:", error);
+      Alert.alert("❌ خطأ", error.message || "حصلت مشكلة في رفع الصورة");
+      setProfileImage(null);
     }
   };
 
@@ -115,12 +141,13 @@ export default function ProfilePage({
             <Image
               style={styles.img}
               source={
-                data?.userData?.u_img
+                profileImage
+                  ? { uri: profileImage } // ✅ لو عندنا صورة محلية
+                  : data?.userData?.u_img
                   ? {
-                      uri: `${data.api}${data.userData.u_img.url}`,
-                      profileImage,
-                    }
-                  : img
+                      uri: `${data.api}/factoryhub/upload/${data.userData.u_img}`,
+                    } // ✅ من الـ server
+                  : img // ✅ الصورة الافتراضية
               }
               resizeMode="cover"
             />

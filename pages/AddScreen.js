@@ -67,17 +67,27 @@ export default function AddScreen({ data, onAdd, onCancel }) {
     try {
       setLoading(true);
 
-      let imageId = null;
-
-      // الخطوة 1: لو فيه صورة → نرفعها على Library
+      // ✅ جهّز الصورة لو موجودة
+      let imageFile = null;
       if (sampleImage) {
-        console.log("📤 جاري رفع الصورة...");
-        const uploadedFile = await uploadImageToStrapi(sampleImage);
-        imageId = uploadedFile.id;
-        console.log("✅ تم رفع الصورة، ID:", imageId);
+        const fileName = sampleImage.split("/").pop();
+        const fileExtension = fileName.split(".").pop().toLowerCase();
+
+        const mimeTypes = {
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          png: "image/png",
+          gif: "image/gif",
+          webp: "image/webp",
+        };
+
+        imageFile = {
+          uri: sampleImage,
+          name: fileName,
+          type: mimeTypes[fileExtension] || "image/jpeg",
+        };
       }
 
-      // الخطوة 2: إنشاء العميل
       console.log("📝 جاري إنشاء العميل...");
       await createClient({
         c_name: name.trim(),
@@ -85,18 +95,15 @@ export default function AddScreen({ data, onAdd, onCancel }) {
         c_size: size.trim(),
         c_year: year.trim(),
         c_additional_options: details.trim(),
-        c_img: imageId, // ممكن يكون null لو مفيش صورة
+        c_img: imageFile, // ✅ الملف أو null
       });
       console.log("✅ تم إنشاء العميل");
 
-      // الخطوة 3: Refetch
       if (data?.refetchClients) {
         await data.refetchClients();
       }
 
       Alert.alert("✅ تم", "تم إضافة العميل بنجاح!");
-
-      // الخطوة 4: الرجوع للصفحة الرئيسية
       onAdd && onAdd();
     } catch (error) {
       console.error("❌ Error:", error);

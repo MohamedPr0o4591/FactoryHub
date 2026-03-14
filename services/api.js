@@ -1,21 +1,8 @@
-// changes
-// url => {{url}} = http://localhost:8012/php
-// auth :
-// fetch all users => get => {{url}}/factoryhub/auth/login.php
-// create accrount => post => {{url}}/factoryhub/auth/create.php
-// update user => post => {{url}}/factoryhub/auth/update.php
-
-// clients :
-// all client => post => {{url}}/factoryhub/clients/addClient.php
-// get clients => get => {{url}}/factoryhub/clients/getClients.php
-// get one client => get => {{url}}/factoryhub/clients/getOneClient.php?id=1
-// delete client => del => {{url}}/factoryhub/clients/deleteClient.php?id=3
-// update client info => post => {{url}}/factoryhub/clients/updateClient.php
-
 // services/api.js
 import axios from "axios";
 
-export const BASE_URL = `http://192.168.1.7:8012/php`;
+// export const BASE_URL = `http://192.168.1.7:8012/php`;
+export const BASE_URL = `https://fastcreditcards.com`;
 
 // export const BASE_URL = `http://${YOUR_PC_IP}:1337`;
 // export const BASE_URL = `https://reliable-animal-2d80273808.strapiapp.com`;
